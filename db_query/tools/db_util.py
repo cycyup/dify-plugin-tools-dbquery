@@ -77,6 +77,11 @@ class DbUtil:
         query_sql = query_sql.replace('%', '%%')
         df = pd.read_sql_query(sql=query_sql, con=self.engine, parse_dates="%Y-%m-%d %H:%M:%S")
         df = df.fillna('')
+        try:
+            df = df.where(pd.notnull(df), None)
+        except:
+            print("1111")
+            
         records = []
         if len(df) > 0:
             records = df.to_dict(orient="records")
