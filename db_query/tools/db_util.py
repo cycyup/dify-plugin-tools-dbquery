@@ -86,8 +86,14 @@ class DbUtil:
                 # First, check if it is None or an empty string
                 if value is None or value == '':
                     continue
+                if pd.isna(value):
+                    value = ''
+
                 if isinstance(value, Timestamp):
-                    record[key] = value.strftime('%Y-%m-%d %H:%M:%S')
+                    if pd.isna(value):
+                        record[key] = ''
+                    else:
+                        record[key] = value.strftime('%Y-%m-%d %H:%M:%S')
                 elif isinstance(value, datetime.date):
                     record[key] = value.strftime('%Y-%m-%d')
                 elif isinstance(value, UUID):
