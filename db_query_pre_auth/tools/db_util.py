@@ -77,6 +77,12 @@ class DbUtil:
         query_sql = query_sql.replace('%', '%%')
         df = pd.read_sql_query(sql=query_sql, con=self.engine, parse_dates="%Y-%m-%d %H:%M:%S")
         df = df.fillna('')
+        
+        try:
+            df = df.where(pd.notnull(df), None)
+        except:
+            print("1111")
+
         records = []
         if len(df) > 0:
             records = df.to_dict(orient="records")
@@ -86,8 +92,14 @@ class DbUtil:
                 # First, check if it is None or an empty string
                 if value is None or value == '':
                     continue
+                if pd.isna(value):
+                    value = ''
+
                 if isinstance(value, Timestamp):
-                    record[key] = value.strftime('%Y-%m-%d %H:%M:%S')
+                    if pd.isna(value):
+                        record[key] = ''
+                    else:
+                        record[key] = value.strftime('%Y-%m-%d %H:%M:%S')
                 elif isinstance(value, datetime.date):
                     record[key] = value.strftime('%Y-%m-%d')
                 elif isinstance(value, UUID):
